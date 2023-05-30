@@ -19,6 +19,7 @@ analysis: Kyle Thieringer
    - visualizes basic features as a sanity check to assess quality of data
 6. createAllData.m
    - creates a mat file containing kinematic features, audio data, and sync data for each fly
+   - too large for github upload
 7. Analyze_Behavior_Jans.m
    - uses output of createAllData to bin behavior and audio data for later analysis
 8. rankCorrelation.ipynb
