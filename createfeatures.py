@@ -199,7 +199,7 @@ def signed_angle(a, b):
     return np.rad2deg(theta) * sign
 
 
-def compute_features(fThx, mThx, fHd, mHd):
+def compute_features(fThx, mThx, fHd, mHd, px2mm=None, fps=None):
     """Extract behavioral features given head and thorax coordinates.
 
     Args:
@@ -234,6 +234,12 @@ def compute_features(fThx, mThx, fHd, mHd):
     Notes:
         Based off of Junyu Li's implementation (/tigress/MMURTHY/junyu/code/alignFeature/compute_features.py).
     """
+
+    if px2mm is None:
+        px2mm = 1
+    if fps is None:
+        fps = 1
+
     # Fill missing values.
     fThx = fill_missing(fThx, kind="nearest")
     mThx = fill_missing(mThx, kind="nearest")
@@ -312,25 +318,25 @@ def compute_features(fThx, mThx, fHd, mHd):
     fmLS = np.abs(np.sum(fV_vec * fmDir_unit_perp, axis=1))
 
     ftrs = dict()
-    ftrs["mfDist"] = mfDist
-    ftrs["mFV"] = mFV
-    ftrs["fFV"] = fFV
-    ftrs["mFA"] = mFA
-    ftrs["fFA"] = fFA
-    ftrs["mLV"] = mLV
-    ftrs["fLV"] = fLV
-    ftrs["mLS"] = abs(mLV)
-    ftrs["fLS"] = abs(fLV)
-    ftrs["mLA"] = mLA
-    ftrs["fLA"] = fLA
-    ftrs["mRS"] = mRS
-    ftrs["fRS"] = fRS
+    ftrs["mfDist"] = mfDist * px2mm
+    ftrs["mFV"] = mFV * px2mm* fps
+    ftrs["fFV"] = fFV* px2mm* fps
+    ftrs["mFA"] = mFA* px2mm* fps
+    ftrs["fFA"] = fFA* px2mm* fps
+    ftrs["mLV"] = mLV* px2mm* fps
+    ftrs["fLV"] = fLV* px2mm* fps
+    ftrs["mLS"] = abs(mLV)* px2mm* fps
+    ftrs["fLS"] = abs(fLV)* px2mm* fps
+    ftrs["mLA"] = mLA* px2mm* fps
+    ftrs["fLA"] = fLA* px2mm* fps
+    ftrs["mRS"] = mRS* px2mm* fps
+    ftrs["fRS"] = fRS* px2mm* fps
     ftrs["mfAng"] = mfAng
     ftrs["fmAng"] = fmAng
-    ftrs["mfFV"] = mfFV
-    ftrs["fmFV"] = fmFV
-    ftrs["mfLS"] = mfLS
-    ftrs["fmLS"] = fmLS
+    ftrs["mfFV"] = mfFV* px2mm * fps
+    ftrs["fmFV"] = fmFV* px2mm * fps
+    ftrs["mfLS"] = mfLS* px2mm * fps
+    ftrs["fmLS"] = fmLS* px2mm * fps
 
     return ftrs
 
@@ -446,7 +452,7 @@ def smooth_trx_kalman(ts, dt=1 / 100, px_err=10):
 
 
 def make_expt_dataset(expt_folder, output_path=None, overwrite=False, ctr_ind=1,
-                      fwd_ind=0, smoothTrx=False):
+                      fwd_ind=0, fillTrx = False, smoothTrx=False):
     """Gather experiment data into a single file.
 
     Args:
@@ -464,14 +470,25 @@ def make_expt_dataset(expt_folder, output_path=None, overwrite=False, ctr_ind=1,
         ctr_ind: Index of centroid joint. Defaults to 1.
         fwd_ind: Index of "forward" joint (e.g., head). Defaults to 0.
         smoothTrx: If True, smooths using a Kalman filter
-
+        fillTrx: If True, interpolates missing values
     Returns:
         Path to output dataset.
+
     """
 
     expt_name = os.path.basename(expt_folder)
     expt_name = expt_name.split('.mp4')[0]
     print(f"Starting with: {expt_name}")
+    if expt_name.endswith('left'):
+        px2mm = 42./780.8203
+        fps = 60
+    elif expt_name.endswith('right'):
+        px2mm = 42./778.6057
+        fps = 60
+    else:
+        print('did not recognize which side')
+        px2mm = 1
+        fps = 1
 
     if output_path is None:
         output_path = os.getcwd()
@@ -492,6 +509,9 @@ def make_expt_dataset(expt_folder, output_path=None, overwrite=False, ctr_ind=1,
     # Compute tracking-related features.
     trxF = tracks[..., 0]
     trxM = tracks[..., 1]
+    if fillTrx:
+        trxF = fill_missing(trxF)
+        trxM = fill_missing(trxM)
     if smoothTrx:
         trxF = fill_missing(trxF)
         trxM = fill_missing(trxM)
@@ -506,7 +526,7 @@ def make_expt_dataset(expt_folder, output_path=None, overwrite=False, ctr_ind=1,
     wingML, wingMR = compute_wing_angles(egoM, left_ind=2, right_ind=3)
 
     # Compute standard classical features.
-    feats = compute_features(trxF[:, ctr_ind, :], trxM[:, ctr_ind, :], trxF[:, fwd_ind, :], trxM[:, fwd_ind, :])
+    feats = compute_features(trxF[:, ctr_ind, :], trxM[:, ctr_ind, :], trxF[:, fwd_ind, :], trxM[:, fwd_ind, :], px2mm=px2mm, fps=fps)
 
     print("features created")
 
@@ -545,7 +565,13 @@ def main(expt_folder):
     else:
         output_path = os.path.dirname(expt_folder)
 
-    make_expt_dataset(expt_folder, output_path=output_path, smoothTrx=True)
+    make_expt_dataset(expt_folder, output_path=output_path, smoothTrx=False, overwrite=True)
+
+    # datetime = os.path.basename(os.path.dirname(os.path.dirname(expt_folder)))
+    # side = os.path.basename(os.path.dirname(expt_folder))
+    # smoothOutput = os.path.join(output_path, datetime+side+'_smooth.h5')
+    # print(smoothOutput)
+    # make_expt_dataset(expt_folder, output_path=smoothOutput, smoothTrx=True, overwrite=True)
 
 
 if __name__ == "__main__":
