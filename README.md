@@ -20,6 +20,7 @@ analysis: Kyle Thieringer
 6. createAllData.m
    - creates a mat file containing kinematic features, audio data, and sync data for each fly
    - too large for github upload
+   - stored here [google drive link](https://drive.google.com/drive/folders/1Xk7u6UXr3zHIF8rGyDsWlxqYzYAK4uvu?usp=sharing)
 7. Analyze_Behavior_Jans.m
    - uses output of createAllData to bin behavior and audio data for later analysis
 8. rankCorrelation.ipynb
