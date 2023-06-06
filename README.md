@@ -23,6 +23,7 @@ analysis: Kyle Thieringer
    - stored here [google drive link](https://drive.google.com/drive/folders/1Xk7u6UXr3zHIF8rGyDsWlxqYzYAK4uvu?usp=sharing)
 7. Analyze_Behavior_Jans.m
    - uses output of createAllData to bin behavior and audio data for later analysis
+   - this code was sent to me by Dudi. I updated it slightly to work with the new data.
 8. rankCorrelation.ipynb
    - make plots using the output of Analyze_Behavior_Jans.m
 
@@ -33,4 +34,4 @@ analysis: Kyle Thieringer
 - female speed was zscored for each fly then binned rather than using the raw speed
 
 **update** : I took out the smoothing and zscoring to match the original data.
-The ouputs are stored in output_2.mat and allData2.ma in the goole drive folder.
+The ouputs are stored in output_2.mat and allData2.ma in the google drive folder.
