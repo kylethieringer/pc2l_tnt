@@ -1,4 +1,7 @@
-# analysis for updates to Deutsch et al 2019
+# analysis for updates to Deutsch & Clemens et al 2019
+
+paper: [Shared Song Detector Neurons in Drosophila Male and Female Brains Drive Sex-Specific Behaviors](https://www.cell.com/current-biology/fulltext/S0960-9822(19)31024-3)
+
 ```
 data collection : Yiqin Gao
 analysis: Kyle Thieringer
