@@ -5,7 +5,7 @@
 %function Analyze_Behavior_Jans(varargin)
 
 %parameters
-DataFile = 'allData.mat';%here the structure Alldata is saved
+DataFile = 'allData_2.mat';%here the structure Alldata is saved
 SaveTo = 'output';%Here some outputs from this function will be saved
 param.nTakeOnly_NC = 0;% if param.nTakeOnly_NC = 1 - the function will consider only experiments with NoCopulation
 IsReload = 0;
@@ -357,7 +357,7 @@ MaleSong_FliesKinematics(1).FliesKinematics = {'Female forward velocity','Female
 %Saving parameters (including param.CurrTime, the time the function started
 %to run) and output parameters
 % disp(['Saving in ',pwd,filesep(),SaveTo])
-save('/home/kyle/Desktop/output.mat','param','Folders','MaleSong_FliesKinematics')
+save('/home/kyle/Desktop/output_2.mat','param','Folders','MaleSong_FliesKinematics')
 cd(DataFolder)
 
 disp(['Done at ',datestr(datenum(clock))])
