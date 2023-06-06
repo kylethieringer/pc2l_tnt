@@ -31,3 +31,6 @@ analysis: Kyle Thieringer
 - I smoothed data during the createfeatures.py step using a kalman filter.
   - in the original analysis, behavior features were median filtered
 - female speed was zscored for each fly then binned rather than using the raw speed
+
+**update** : I took out the smoothing and zscoring to match the original data.
+The ouputs are stored in output_2.mat and allData2.ma in the goole drive folder.
